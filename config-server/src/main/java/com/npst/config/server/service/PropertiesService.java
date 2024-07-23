@@ -1,12 +1,12 @@
 package com.npst.config.server.service;
 
+import com.npst.config.server.annotations.AuditLog;
 import com.npst.config.server.dao.PropertiesDao;
 import com.npst.config.server.dto.IndividualListDto;
 import com.npst.config.server.dto.PropertiesDto;
 import com.npst.config.server.query.PropertiesQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,14 +33,25 @@ public class PropertiesService {
         this.discoveryClient=discoveryClient;
     }
 
+    @AuditLog
     public List<Map<String,Object>> fetchGroupDetails() {
+//        throw new RuntimeException();
         List<Map<String,Object>> resp = propertiesDao.fetchGroupedList(PropertiesQuery.FETCH_GROUPED_LIST);
         log.info("Fetch Properties Group Details :: {}", resp);
         return resp;
     }
 
+
+    @AuditLog
     public List<Map<String, Object>> fetchDetails(IndividualListDto individualListDto) {
         List<Map<String,Object>> resp = propertiesDao.fetchDetailsList(PropertiesQuery.FETCH_REQUESTED_DETAILS, individualListDto);
+
+        Map<String, Object> properties = resp.stream()
+                .collect(Collectors.toMap(
+                        e -> String.valueOf(e.get("KEY")),
+                        e -> e.get("Value")
+                ));
+        resp.add(properties);
         log.info("Fetch Properties Details :: {}", resp);
         return resp;
     }

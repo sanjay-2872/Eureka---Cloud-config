@@ -45,7 +45,14 @@ public class PropertiesController {
     }
 
     @PostMapping(value = "/update/detail/",consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ResponseMessage> addDetails(@Valid @RequestBody PropertiesDto propertiesDto){
+    public ResponseEntity<ResponseMessage> updateDetail(@Valid @RequestBody PropertiesDto propertiesDto){
+        log.info("Request For Add Properties Detail :: {}", propertiesDto);
+        Map<String, Object> resp = propertiesService.updateDetailById(propertiesDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,resp));
+    }
+
+    @PostMapping(value = "/insert/detail/",consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ResponseMessage> addDetail(@Valid @RequestBody PropertiesDto propertiesDto){
         log.info("Request For Add Properties Detail :: {}", propertiesDto);
         Map<String, Object> resp = propertiesService.updateDetailById(propertiesDto);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,resp));

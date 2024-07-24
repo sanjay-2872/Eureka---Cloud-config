@@ -43,16 +43,19 @@ public class PropertiesService {
 
 
     @AuditLog
-    public List<Map<String, Object>> fetchDetails(IndividualListDto individualListDto) {
-        List<Map<String,Object>> resp = propertiesDao.fetchDetailsList(PropertiesQuery.FETCH_REQUESTED_DETAILS, individualListDto);
+    public Map<String,Object> fetchDetails(IndividualListDto individualListDto) {
 
-        Map<String, Object> properties = resp.stream()
+        Map<String,Object> resp = new HashMap<>();
+        List<Map<String,Object>> appPropDetails = propertiesDao.fetchDetailsList(PropertiesQuery.FETCH_REQUESTED_DETAILS, individualListDto);
+        resp.put("appPropDetails", appPropDetails);
+        Map<String, Object> properties = appPropDetails.stream()
                 .collect(Collectors.toMap(
                         e -> String.valueOf(e.get("KEY")),
                         e -> e.get("Value")
                 ));
-        resp.add(properties);
-        log.info("Fetch Properties Details :: {}", resp);
+        //appPropDetails.add(properties);
+        resp.put("properties", properties);
+        log.info("Fetch Properties Details :: {}", appPropDetails);
         return resp;
     }
 
@@ -77,5 +80,11 @@ public class PropertiesService {
             });
         }
         return respDataList;
+    }
+
+    public int addDetails(PropertiesDto propertiesDto) {
+       int resp = propertiesDao.insertDetail(PropertiesQuery.INSERT_DETAIL, propertiesDto);
+        log.info("Inserted Properties Details affected data :: {}", resp);
+        return resp;
     }
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PropertiesDto {
-    @NotNull(message = "Field - id, can't be null")
+    @NotNull(groups = Update.class, message = "Field - id, can't be null")
     private String id;
     @NotNull(message = "Field - application, can't be null")
     private String application;
@@ -25,3 +25,6 @@ public class PropertiesDto {
     @NotNull(message = "Field - createdBy, can't be null")
     private String createdBy;
 }
+
+
+

@@ -4,6 +4,7 @@ import com.npst.config.server.constants.ResponseConstants;
 import com.npst.config.server.dto.IndividualListDto;
 import com.npst.config.server.dto.PropertiesDto;
 import com.npst.config.server.dto.ResponseMessage;
+import com.npst.config.server.dto.Update;
 import com.npst.config.server.service.PropertiesService;
 import com.npst.config.server.utils.ResponseUtils;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,13 +42,13 @@ public class PropertiesController {
     @PostMapping(value = "/list/details/",consumes = "application/json", produces = "application/json")
     public ResponseEntity<ResponseMessage> listAllDetails(@Valid @RequestBody IndividualListDto individualListDto){
         log.info("Request For List Properties Details :: {}", individualListDto);
-        List<Map<String,Object>> propertiesList = propertiesService.fetchDetails(individualListDto);
+        Map<String,Object> propertiesList = propertiesService.fetchDetails(individualListDto);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,propertiesList));
     }
 
     @PostMapping(value = "/update/detail/",consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ResponseMessage> updateDetail(@Valid @RequestBody PropertiesDto propertiesDto){
-        log.info("Request For Add Properties Detail :: {}", propertiesDto);
+    public ResponseEntity<ResponseMessage> updateDetail(@Validated(Update.class) @RequestBody PropertiesDto propertiesDto){
+        log.info("Request For update Properties Detail :: {}", propertiesDto);
         Map<String, Object> resp = propertiesService.updateDetailById(propertiesDto);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,resp));
     }
@@ -54,9 +56,8 @@ public class PropertiesController {
     @PostMapping(value = "/insert/detail/",consumes = "application/json", produces = "application/json")
     public ResponseEntity<ResponseMessage> addDetail(@Valid @RequestBody PropertiesDto propertiesDto){
         log.info("Request For Add Properties Detail :: {}", propertiesDto);
-        Map<String, Object> resp = propertiesService.updateDetailById(propertiesDto);
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,resp));
+        propertiesService.addDetails(propertiesDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseUtils.successResponseMsg(ResponseConstants.SUCCESS_OK,"Success"));
     }
-
 
 }
